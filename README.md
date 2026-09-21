@@ -2,6 +2,10 @@
 
 <!-- Replace this line with your name and which corpus you picked. -->
 
+Name: Frances Chang
+
+Corpus picked: `campus_life`.
+
 > **This file is your submission.** Fill it in as you go — most sections get
 > written during the milestone that produces them, not at the end.
 >
@@ -26,6 +30,8 @@
      this repo.
 
      Milestone 5. -->
+
+For this unit, we picked the corpus `campus_life`.
 
 ## Chunking Strategy
 
