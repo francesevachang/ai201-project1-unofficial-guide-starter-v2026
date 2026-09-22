@@ -74,12 +74,12 @@ Requiring 4/5 allows for classification errors of whether a question is supporte
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
-At least 4 of 5 sample chunks contains a piece of factual information which a person can tell the same information using a complete sentence with a subjective and a verb.
+At least 4 of 5 sample chunks contains a piece of factual information which a person can tell the same information using a complete sentence with a subjective and a verb (and an objective if it only makes sense with its presence), and no more than 7 pieces of factual information.
 
 
 **Why this target:**
 
-This threshold allows for most of the chunks to have at least one useful content. Requiring more than that would not allow any tolerance, while allowing less than that would allows too many chunks with low amount of or even useless information. 
+This threshold allows for most of the chunks to have at least one useful content and not too much information such that that importance of each piece gets diluted. Requiring more than that would not allow any tolerance, while allowing less than that would allows too many chunks with low amount of information or too much information.
 
 ---
 
