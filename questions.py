@@ -27,7 +27,7 @@ QUESTIONS = [
     {"question": "How many classes can I take as pass/fail in my degree?", "expects": "maximum eight"},
     {"question": "What's a typical wait time to talk to a councellor at the health center for the first time?", "expects": "three or four days"},
     {"question": "When does the weather turn warmer after winter?", "expects": "after early march"},
-    {"question": "Can I use my remaining printint quota from a past semester?", "expects": "No"},
+    {"question": "Can I use my remaining printing quota from a past semester?", "expects": "No"},
 ]
 
 # Questions from a different world entirely. Your gate should refuse all five.

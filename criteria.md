@@ -19,12 +19,13 @@ pipeline earns credit; *"80% seemed reasonable"* does not.
 
 ## 1. Retrieved chunks contain the answer
 
-For at least 4 of my 5 test questions, the retrieved chunks include one that
-contains the answer.
+For at least 4 of my 5 test questions, the retrieved chunks include one that contains the answer.
 
 **Why this target:**
 <!-- e.g. "One of my questions is about a topic only two documents mention, so
      I expect that one to be hard." -->
+
+While all the current test questions have a definite answer retrievable from the corpus, most of them are topics that are only mentioned in just one document. Requiring 5/5 would need perfect retrieval and does not tolerate any occasional miss, while having a lower standard seems to allow too many misses to judge the system as a well functioning retrieval system.
 
 ---
 
@@ -35,6 +36,8 @@ Every answer the system produces names at least one source document.
 **Why this target:**
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
+
+Naming the source document should be required for each answer as a source document should be an observable proof that the answer is coming from an actual document in the corpus. The  expected answers of the five test questions are also made sure to come from at least one documents from the corpus.
 
 ---
 
@@ -53,6 +56,8 @@ in at least 4 of 5 tries.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
+Requiring 4/5 allows for classification errors of whether a question is supported, which might happen occasionally. Having a higher threshold means no tolerance at all and having a lower threshold seems to allow out-of-scope questions too frequently for the system to be judged as well-functioning. 
+
 ---
 
 ## 4. Something about your chunks
@@ -68,6 +73,7 @@ in at least 4 of 5 tries.
           sentence cut in half at either end."
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
+
 
 
 
