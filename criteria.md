@@ -74,12 +74,12 @@ Requiring 4/5 allows for classification errors of whether a question is supporte
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
-
+At least 4 of 5 sample chunks contains a piece of factual information which a person can tell the same information using a complete sentence with a subjective and a verb.
 
 
 **Why this target:**
 
-
+This threshold allows for most of the chunks to have at least one useful content. Requiring more than that would not allow any tolerance, while allowing less than that would allows too many chunks with low amount of or even useless information. 
 
 ---
 
@@ -93,11 +93,12 @@ Requiring 4/5 allows for classification errors of whether a question is supporte
      present — anything, as long as it names a number or an observable
      outcome. -->
 
+For at least 4 of 5 test questions, every source named in the generated answer actually contains answer to the question (source not only present, but correct).
 
 
 **Why this target:**
 
-
+Requiring 4/5 allows for errors when a document appears to be highly relevant but actually does not contain the answer to the question, which might happen sometimes. Having a higher threshold means no tolerance at all and having a lower threshold seems to allow too many answers to cite wrong sources for the system to be judged as well-functioning.
 
 ---
 
