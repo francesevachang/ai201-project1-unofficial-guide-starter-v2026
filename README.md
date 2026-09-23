@@ -31,7 +31,7 @@ Corpus picked: `campus_life`.
 
      Milestone 5. -->
 
-For this unit, we picked the corpus `campus_life`.
+This project answers questions about the `campus_life` corpus — 88 short posts about dorms, dining halls, courses, and deadlines. It handles specific questions a student would actually ask that the corpus has answers to, like when to drop a class or how long the wait is at a dining hall. It works by breaking each document into small pieces, finding the pieces closest to the question, and only answering when a piece is a close enough match — otherwise it says it doesn't know.
 
 ## Chunking Strategy
 
@@ -156,9 +156,9 @@ Based on the results below, the numbers separating the two groups (questions wit
 
      Milestone 5. -->
 
-**1.**
+**1.** I asked Claude to write the chunking function based on my notes and it actually ignored the overlap for the first time. However, later I changed my chunking approach, and this time it did a good job following my
 
-**2.**
+**2.** I asked Claude to generate a script for retrieving the top results and their relevance for the five test questions and out-of-scope questions. I was very specific about what I was looking for as well as the format, and it did a pretty good job, so I did not change anything.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
