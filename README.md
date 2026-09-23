@@ -129,7 +129,16 @@ Just finished a year in this building. Built 1954, partially renovated 2008.
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| When should I drop a class to avoid a W on my transcript? | campus_life/admin_add_drop_deadline.txt | 0.3643 |
+| How many classes can I take as pass/fail in my degree? | campus_life/admin_pass_fail_option.txt | 0.3487 |
+| What's a typical wait time to talk to a councellor at the health center for the first time? | campus_life/health_center.txt | 0.3976 |
+| When does the weather turn warmer after winter? | campus_life/winter_gear.txt | 0.4679 |
+| Can I use my remaining printing quota from a past semester? | campus_life/admin_printing_quota.txt | 0.3604 |
+| What is the capital of Mongolia? | NOT IN CORPUS | 0.7873 |
+| How do I change the oil in a diesel engine? | NOT IN CORPUS | 0.8677 |
+| Who won the 1994 World Cup? | NOT IN CORPUS | 0.8270 |
+| What is the recommended dosage of ibuprofen for a headache? | NOT IN CORPUS | 0.8327 |
+| How do I write a for loop in Rust? | NOT IN CORPUS | 0.8312 |
 
 ## How I Used AI
 
