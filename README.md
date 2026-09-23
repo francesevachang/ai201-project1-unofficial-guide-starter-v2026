@@ -111,12 +111,17 @@ Just finished a year in this building. Built 1954, partially renovated 2008.
 
 **Question:**
 
+Can I use my remaining printing quota from a past semester?
+
 **Answer:**
 
 ```
+No, you cannot use remaining printing quota from a past semester because the printing quota does not roll over (admin_printing_quota.txt).
 ```
 
-**My relevance cutoff:**
+**Selected relevance cutoff and reason:**
+
+Based on the results below, the numbers separating the two groups (questions with answers supported in the corpus, versus not) are 0.4679 and 0.7873, so the cutoff should sit in this gap. It seems reasonable to place the cutoff at 0.65, slightly higher than there average 0.63, for a lower risk of the system refusing questions it has answer to.
 
 <!-- The number you set in config.py, and how you got there.
 
