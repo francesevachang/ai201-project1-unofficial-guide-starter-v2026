@@ -36,7 +36,12 @@ For this unit, we picked the corpus `campus_life`.
 ## Chunking Strategy
 
 **Chunk size:**
+
+I did not set a fixed chunk size. Instead, judging the structure of the documents in this corpus, I set each chunk to contain one sentence, preappended by one sentence before it, preappended by the first paragraph of the document, which is the title of the post. My reason for this approach is that most sentences seem to tell at least a piece of information, and the overlap of one sentence further preserves context, especially when a pronoun is used in the current sentence that refers to something mentioned in the previous sentence. I did not slice the documents based on paragraphs because I found out that some longer paragraphs contain multiple pieces of information which I fear would lead to loss of focus on the important information.
+
 **Overlap:**
+
+One sentence right before the current sentence. (Reason stated above.)
 
 <!-- What about YOUR documents made you pick these numbers? Short posts and
      long sectioned guides don't want the same chunking, and "800 seemed
@@ -59,29 +64,44 @@ For this unit, we picked the corpus `campus_life`.
 
      Milestone 3. -->
 
-**Chunk 1** — source: `` — produced by: ``
+**Chunk 1** — source: ``admin_add_drop_deadline.txt#0 — produced by: chunker.py::split_documents``
 
 ```
+On the add/drop deadline
+
+You can add a course through the end of the second week.
 ```
 
-**Chunk 2** — source: `` — produced by: ``
+**Chunk 2** — source: ``course_cs_340.txt#2 — produced by: chunker.py::split_documents``
 
 ```
+CS 340 Databases
+
+Format is lecture twice a week plus a project that runs the whole term. Assessment: one midterm and a final, both open-book.
 ```
 
-**Chunk 3** — source: `` — produced by: ``
+**Chunk 3** — source: ``course_stat_150.txt#3 — produced by: chunker.py::split_documents``
 
 ```
+STAT 150 Applied Statistics
+
+Assessment: three equally weighted midterms, no final. No curve, but the lowest midterm is dropped.
 ```
 
-**Chunk 4** — source: `` — produced by: ``
+**Chunk 4** — source: ``dining_the_ridgeway_cafe_followup.txt#3 — produced by: chunker.py::split_documents``
 
 ```
+Re: The Ridgeway Café
+
+If you're trying to eat between classes, go before 11:45 and it's a different building entirely. Also worth saying: seating is tight; about 40 seats for a building of 900.
 ```
 
-**Chunk 5** — source: `` — produced by: ``
+**Chunk 5** — source: ``housing_morrow_house.txt#1 — produced by: chunker.py::split_documents``
 
 ```
+Morrow House — what it's actually like
+
+Just finished a year in this building. Built 1954, partially renovated 2008.
 ```
 
 ## Sample Answer

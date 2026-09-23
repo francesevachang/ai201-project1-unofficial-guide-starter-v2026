@@ -22,6 +22,7 @@ to it, write down what you saw, and move on. That's a real observation about
 your pipeline, not giving up.
 """
 
+import re
 from dataclasses import dataclass
 
 import config
@@ -80,6 +81,66 @@ def fallback_split(
     return chunks
 
 
+_SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+")
+
+def _split_into_sentences(text: str) -> list[str]:
+    """
+    Split on sentence-ending punctuation followed by whitespace.
+
+    Splitting on every literal "." would break costs like "$1.50" and hours
+    like "9:00am" apart. Those never have a space right after the period, so
+    requiring trailing whitespace before the next sentence starts avoids that.
+    """
+    return [s.strip() for s in _SENTENCE_BOUNDARY.split(text) if s.strip()]
+
+
+def campus_life_split(
+        documents: list[Document]
+    ) -> list[Chunk]:
+    """
+    Split campus_life posts on sentence boundaries.
+
+    Each chunk carries the sentence right before it (config.CHUNK_OVERLAP
+    sentences' worth), so a fact that only makes sense next to its neighbor —
+    "Curved to a b- median." right after "two midterms and a cumulative
+    final." — doesn't lose that context just because it landed in its own
+    chunk.
+    """
+    overlap = 1 # number of sentences to carry over from the previous chunk
+
+    chunks: list[Chunk] = []
+    for doc in documents:
+        paragraphs = [p.strip() for p in doc.text.split("\n\n") if p.strip()]
+        if not paragraphs:
+            continue
+
+        title, body_paragraphs = paragraphs[0], paragraphs[1:]
+        if not body_paragraphs:
+            body_paragraphs = [title]
+            title = None
+
+        sentences = [
+            sentence
+            for para in body_paragraphs
+            for sentence in _split_into_sentences(para)
+        ]
+
+        for index in range(len(sentences)):
+            window = sentences[max(0, index - overlap) : index + 1]
+            body = " ".join(window)
+            text = f"{title}\n\n{body}" if title else body
+            chunks.append(
+                Chunk(
+                    text=text,
+                    source=doc.source,
+                    index=index,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+
+    return chunks
+
+
 def split_documents(documents: list[Document]) -> list[Chunk]:
     """
     Split documents into chunks. ⚠️ REPLACE THE BODY OF THIS IN MILESTONE 3.
@@ -97,7 +158,8 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
       - Would splitting on paragraph breaks keep more thoughts intact than
         splitting on a character count?
     """
-    return fallback_split(documents)
+
+    return campus_life_split(documents)
 
 
 def describe(chunks: list[Chunk]) -> str:
