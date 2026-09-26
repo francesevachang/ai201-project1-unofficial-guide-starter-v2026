@@ -187,15 +187,48 @@ Based on the results below, the numbers separating the two groups (questions wit
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 4/5 | MISSED |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Proper chunk size | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Source in generated answer contains answer | 4 of 5 | 5/5 | 5/5  | 4/5 | MET |
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
+
+The following are real output for each criterion from run 1 (outputs are listed in order of the questions).
+
+```
+To avoid a W on your transcript, you should drop a class through the end of the second week, because a drop after week two shows as a W. 
+
+Source: admin_add_drop_deadline.txt
+```
+```
+You can take a maximum of eight classes as pass/fail across your degree (with a limit of two per year). 
+
+Source: `admin_pass_fail_option.txt`
+
+```
+```
+The typical wait time for a first counselling session is usually three or four days. 
+
+Source: health_center.txt
+
+```
+```
+I do not have enough information to answer this question.
+
+Source: winter_gear.txt and transit_walking.txt
+
+```
+```
+No, you cannot use your remaining printing quota from a past semester because it does not roll over. 
+
+Source: `admin_printing_quota.txt`
+
+```
+
 
 ## Verdicts
 
