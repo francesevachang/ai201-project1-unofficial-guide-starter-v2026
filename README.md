@@ -300,6 +300,36 @@ Source: `admin_printing_quota.txt`
 
      Milestone 3. -->
 
+
+The only criterion missed is the second one, "Every answer the system produces names at least one source document." Run 3 of the fourth question that asks "When does the weather turn warmer after winter?" yields the following:
+
+```
+Best distance: 0.4679 (passed the gate)
+
+Sources retrieved: transit_walking.txt, winter_gear.txt
+
+I do not have enough information to answer this question from the provided documents.
+```
+
+We can see that the best distance is well under the gate, so the generation stage is what is causing the problem out of the five stages (loading, chunking, embedding, retrieval, generation).
+
+A potential mechanism causing this could be that the model is over-cautious from the strict instruction. Note that in `generate.py`, we specify:
+
+```
+GROUNDING_INSTRUCTION = """You answer questions using only the documents provided to you.
+
+Rules:
+- Use only the information in the documents below. Do not use anything you know from elsewhere.
+- If the documents don't cover the question, say you don't have enough information. Do not guess.
+- Name the document your answer came from, using the filename given in each excerpt.
+- Be brief. Two or three sentences is usually enough."""
+```
+
+However, the document only says "Cold from mid-November to early March" — never "turns warmer" as worded in the question, so the answer "early March" requires one small inference (cold ending implies warmer starting), unlike the other four questions, which are near-exact substring lookups. It's answerable with high confidence, but sits right at the edge of what "do not guess" was meant to prevent, so a strictly-instructed model can reasonably refuse rather than take that one step. This is why this question does not pass criterion 2 and 5, leading to our verdict of a missed criterion (criterion #2).
+
+
+
+
 ## The Improvement
 
 **What I changed:**
