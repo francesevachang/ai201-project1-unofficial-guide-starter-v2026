@@ -274,11 +274,11 @@ Source: `admin_printing_quota.txt`
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 | Retrieved chunk contains the answer | MET |  |
-| 2 | Every answer names a source | MISSED |  |
-| 3 | Gate stops out-of-corpus questions | MET |  |
-| 4 | Proper chunk size | MET |  |
-| 5 | Source in generated answer contains answer | MET |  |
+| 1 | Retrieved chunk contains the answer | MET | all 5 questions consistently retrieved a chunk containing the answer across all three runs, exceeding the 4/5 bar |
+| 2 | Every answer names a source | MISSED | The target allowed zero tolerance (5/5), and Run 3's answer produced no source line at all, failing the threshold |
+| 3 | Gate stops out-of-corpus questions | MET | All 5 out-of-scope questions were refused in the single deterministic pass, passing the 4/5 threshold |
+| 4 | Proper chunk size | MET | 5 of 5 sampled chunks each carried a clear, checkable fact within the stated bounds |
+| 5 | Source in generated answer contains answer | MET | In all but one run, the source named in a generated answer genuinely supported that answer, and the last run only has one question failing to provide a source, thus keeping the result at the 4/5 threshold. |
 
 ## Diagnoses
 
