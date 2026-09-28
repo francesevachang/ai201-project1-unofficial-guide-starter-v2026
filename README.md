@@ -197,31 +197,62 @@ Based on the results below, the numbers separating the two groups (questions wit
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
 
-The following are real output for each criterion from run 1 (outputs are listed in order of the questions).
+The following are parts of real output from run 1 (outputs are listed in order of the questions).
 
+- Produced by: `run_eval.py::main`
+- Retrieval: `store.py::search`, chunks from `chunker.py::split_documents`
+- Corpus: `campus_life` (index variant `default`)
+- top-k: 4 · relevance cutoff: 0.65
+- Runs per question: 3, caching off
+- When: 2026-09-23 21:20
+
+### When should I drop a class to avoid a W on my transcript? — run 1
+
+- Best distance: 0.3643 (passed the gate)
+- Sources retrieved: admin_add_drop_deadline.txt, admin_grade_appeals.txt, admin_withdrawal_deadline.txt
 ```
 To avoid a W on your transcript, you should drop a class through the end of the second week, because a drop after week two shows as a W. 
 
 Source: admin_add_drop_deadline.txt
 ```
+
+### How many classes can I take as pass/fail in my degree? — run 1
+
+- Best distance: 0.3487 (passed the gate)
+- Sources retrieved: admin_graduation_requirements.txt, admin_pass_fail_option.txt
 ```
 You can take a maximum of eight classes as pass/fail across your degree (with a limit of two per year). 
 
 Source: `admin_pass_fail_option.txt`
 
 ```
+
+### What's a typical wait time to talk to a councellor at the health center for the first time? — run 1
+
+- Best distance: 0.3976 (passed the gate)
+- Sources retrieved: dining_the_ridgeway_cafe.txt, dining_the_ridgeway_cafe_followup.txt, health_center.txt
 ```
 The typical wait time for a first counselling session is usually three or four days. 
 
 Source: health_center.txt
 
 ```
+
+### When does the weather turn warmer after winter? — run 1
+
+- Best distance: 0.4679 (passed the gate)
+- Sources retrieved: transit_walking.txt, winter_gear.txt
 ```
 I do not have enough information to answer this question.
 
 Source: winter_gear.txt and transit_walking.txt
 
 ```
+
+### Can I use my remaining printing quota from a past semester? — run 1
+
+- Best distance: 0.3604 (passed the gate)
+- Sources retrieved: admin_add_drop_deadline.txt, admin_printing_quota.txt
 ```
 No, you cannot use your remaining printing quota from a past semester because it does not roll over. 
 
@@ -243,11 +274,11 @@ Source: `admin_printing_quota.txt`
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunk contains the answer | MET |  |
+| 2 | Every answer names a source | MISSED |  |
+| 3 | Gate stops out-of-corpus questions | MET |  |
+| 4 | Proper chunk size | MET |  |
+| 5 | Source in generated answer contains answer | MET |  |
 
 ## Diagnoses
 
