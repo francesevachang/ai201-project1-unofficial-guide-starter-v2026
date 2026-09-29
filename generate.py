@@ -278,6 +278,7 @@ GROUNDING_INSTRUCTION = """You answer questions using only the documents provide
 Rules:
 - Use only the information in the documents below. Do not use anything you know from elsewhere.
 - If the documents don't cover the question, say you don't have enough information. Do not guess.
+- You may state something the documents directly imply — for example, if a document gives a date range for one condition, you may state when that condition ends or begins — as long as you don't bring in facts from outside the documents.
 - Name the document your answer came from, using the filename given in each excerpt.
 - Be brief. Two or three sentences is usually enough."""
 

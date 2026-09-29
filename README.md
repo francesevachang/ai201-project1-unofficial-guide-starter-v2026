@@ -332,12 +332,18 @@ However, the document only says "Cold from mid-November to early March" — neve
 
 ## The Improvement
 
+If we would like questions similar to the fourth test question to be answered correctly, we would need to edit the grounding instruction to be slightly looser.
+
 **What I changed:**
+
+Added a clause to `GROUNDING_INSTRUCTION` in `generate.py` allowing direct, text-supported inference: "You may state something the documents directly imply — for example, if a document gives a date range for one condition, you may state when that condition ends or begins — as long as you don't bring in facts from outside the documents."
 
 **Why I picked it:**
 
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
      you picked a fix because it sounded impressive. -->
+
+The diagnosis showed the model refused question 4 not for lack of evidence but because answering "early March" required one inferential step beyond a direct lookup, which "do not guess" discouraged too broadly — this clause narrows that instruction to still block outside knowledge while permitting inferences the text already supports.
 
 ### Run Log — After
 
@@ -377,3 +383,6 @@ However, the document only says "Cold from mid-November to early March" — neve
      differently, and why?
 
      Milestone 5. -->
+
+## How I Used AI 
+I asked Claude to argue the opposite verdict as strongly as it can to see if I did not catch anything. I also used it to confirm my thought on why criterion #2 cannot be met.
