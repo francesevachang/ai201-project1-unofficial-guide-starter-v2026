@@ -352,11 +352,11 @@ The diagnosis showed the model refused question 4 not for lack of evidence but b
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET  |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Proper chunk size | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Source in generated answer contains answer | 4 of 5 | 4/5 | 5/5 | 4/5 | MET |
 
 **Did it help?**
 
@@ -366,6 +366,8 @@ The diagnosis showed the model refused question 4 not for lack of evidence but b
      tell.
 
      Milestone 4. -->
+
+From the above, we can see that criterion #2 is not met, so it's reasonable to say that the change helps. Although from the running log we can see the generated answer to the same question still does not directly tell the expected answer consistently, but now the model is giving more information for the user to judge on their own whether to make the inference, instead of just saying there is not enough information, which is how we want it to behave.
 
 ## What's Still Broken
 
