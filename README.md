@@ -379,6 +379,8 @@ From the above, we can see that criterion #2 is not met, so it's reasonable to s
 
      Milestone 5. -->
 
+We can see from the running log and the table above that all criteria are met. However, for future improvements, I would consider trying a different chunking approach that yields larger chunks and potentially less overlap, to improve storage and embedding time while retaining retrieval correctness.
+
 ## What I'd Do Differently
 
 <!-- Knowing what you know now — which of your five criteria would you write
@@ -386,5 +388,9 @@ From the above, we can see that criterion #2 is not met, so it's reasonable to s
 
      Milestone 5. -->
 
+I might rewrite criterion #2 for better clarity. As worded — "every answer names at least one source document," target 5/5 — it assumes the only way this criterion fails is a citation-formatting slip (the system found the right chunk, answered, but forgot to write the filename). But what actually happened in Run 3 was different: the generation stage refused to answer at all over an inference gap, so there was no source to name in the first place. A refusal and a missing-citation-on-a-real-answer are two different failure modes with two different fixes, but the criterion as written can't tell them apart — it just says MISSED either way, which obscures which stage actually broke. Given common practice usually exempts refusals from citation requirements, I would rewrite to something like: "Every answer the gate allows through must name at least one source document (5/5), except when the model still refuses to answer after the gate."
+
+And then, score refusal behavior separately under another metric, potentially on whether it states the specific gap (naming what's missing rather than generic "not enough information") and points to what it did find (referencing the closes relevant document/chunk), and those would be new criteria to be written.
+
 ## How I Used AI 
-I asked Claude to argue the opposite verdict as strongly as it can to see if I did not catch anything. I also used it to confirm my thought on why criterion #2 cannot be met.
+I asked Claude to argue the opposite verdict as strongly as it can to see if I did not catch anything. I also used it to confirm my thought on why criterion #2 cannot be met and suggest ways of improvement.
