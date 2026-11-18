@@ -150,6 +150,9 @@ def ask():
         answer=outcome["answer"],
         sources=outcome["sources"],
         best_distance=round(outcome["best_distance"], 4),
+        num_chunks=outcome["num_chunks"],
+        retrieval_ms=outcome["retrieval_ms"],
+        generation_ms=outcome["generation_ms"],
         **usage,
     )
 
