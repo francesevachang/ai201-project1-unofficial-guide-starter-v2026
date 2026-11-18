@@ -4,6 +4,55 @@ Everything about how the starter works and how to use it.
 
 ---
 
+## Capstone: run the server
+
+This is the path I used for the capstone. It runs locally (Path B).
+
+**Needs**
+
+- Python 3.12 (I used 3.12.7)
+- A Gemini API key in `.env` (copy `.env.example`)
+- The embedding model, `all-MiniLM-L6-v2`, about 80 MB. It downloads the first time you index.
+- Dependencies pinned in `requirements-pinned.txt`
+
+**Start it**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-pinned.txt
+cp .env.example .env            # paste your key into .env
+python app.py index             # builds the search index, once
+PORT=5001 python serve.py
+```
+
+**Ask it something** (second terminal)
+
+```bash
+curl -X POST localhost:5001/ask -H "Content-Type: application/json" \
+  -d '{"question": "When should I drop a class to avoid a W on my transcript?"}'
+```
+
+Optional: add a `"label"` to tag the request, so you can find it in the log later.
+
+```bash
+curl -X POST localhost:5001/ask -H "Content-Type: application/json" \
+  -d '{"question": "When should I drop a class to avoid a W on my transcript?", "label": "before-c1-t2"}'
+
+grep '"label": "before-c1-t2"' logs/requests.jsonl
+```
+
+**Where the log is**
+
+Every request adds one line to `logs/requests.jsonl`, including failed ones.
+
+**Testing without the cache**
+
+Start with `AI201_CACHE=0 PORT=5001 python serve.py`. Otherwise a repeated question comes back from the cache and the log shows `"cached": true` with 0 tokens.
+
+
+---
+
 ## Before your first class
 
 Setup happens **before class**, not during it. The
