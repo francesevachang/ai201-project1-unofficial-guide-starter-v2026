@@ -438,3 +438,42 @@ Lines with `status` of `error` or `bad_request` stop early, so they leave out th
 
 - No changes to chunking, retrieval, the gate, or the prompt.
 - No new endpoints or UI.
+
+**Instrumentation**
+
+Every `/ask` request adds a line to `logs/requests.jsonl`, which is committed. The first 10 lines below are my cost run: the 5 test questions twice, cache off, after one warm-up request I left out. The last line is a request with no question in it.
+
+I also tested the error path with a bad API key. It returned a 500 and logged `"status": "error"`. I cleared that log, so it isn't pasted.
+
+```json
+{"timestamp": "2026-11-18T20:48:45.795+00:00", "label": "cost-1795034922-1", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "When should I drop a class to avoid a W on my transcript?", "status": "answered", "error": null, "answer": "You should drop a class through the end of the second week to avoid a W on your transcript, because a drop after week two shows as a W. \n\nSource: `admin_add_drop_deadline.txt`", "sources": ["admin_add_drop_deadline.txt", "admin_grade_appeals.txt", "admin_withdrawal_deadline.txt"], "best_distance": 0.3643, "num_chunks": 4, "retrieval_ms": 99, "generation_ms": 806, "cached": false, "input_tokens": 403, "output_tokens": 46, "latency_ms": 905}
+{"timestamp": "2026-11-18T20:48:46.704+00:00", "label": "cost-1795034922-2", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "How many classes can I take as pass/fail in my degree?", "status": "answered", "error": null, "answer": "You can take a maximum of two pass/fail courses per year, with a maximum of eight across your entire degree (admin_pass_fail_option.txt).", "sources": ["admin_graduation_requirements.txt", "admin_pass_fail_option.txt"], "best_distance": 0.3487, "num_chunks": 4, "retrieval_ms": 83, "generation_ms": 733, "cached": false, "input_tokens": 400, "output_tokens": 34, "latency_ms": 816}
+{"timestamp": "2026-11-18T20:48:47.525+00:00", "label": "cost-1795034922-3", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "What's a typical wait time to talk to a councellor at the health center for the first time?", "status": "answered", "error": null, "answer": "The typical wait time for a first counselling session is usually three or four days (health_center.txt).", "sources": ["dining_the_ridgeway_cafe.txt", "dining_the_ridgeway_cafe_followup.txt", "health_center.txt"], "best_distance": 0.3976, "num_chunks": 4, "retrieval_ms": 89, "generation_ms": 1592, "cached": false, "input_tokens": 442, "output_tokens": 22, "latency_ms": 1681}
+{"timestamp": "2026-11-18T20:48:49.210+00:00", "label": "cost-1795034922-4", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "When does the weather turn warmer after winter?", "status": "answered", "error": null, "answer": "Based on the provided documents, the cold period lasts until early March (winter_gear.txt). However, the documents do not state when the weather actually turns warmer.", "sources": ["transit_walking.txt", "winter_gear.txt"], "best_distance": 0.4679, "num_chunks": 4, "retrieval_ms": 81, "generation_ms": 2226, "cached": false, "input_tokens": 366, "output_tokens": 34, "latency_ms": 2307}
+{"timestamp": "2026-11-18T20:48:51.520+00:00", "label": "cost-1795034922-5", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "Can I use my remaining printing quota from a past semester?", "status": "answered", "error": null, "answer": "No, you cannot. The printing quota does not roll over from past semesters (admin_printing_quota.txt).", "sources": ["admin_add_drop_deadline.txt", "admin_printing_quota.txt"], "best_distance": 0.3604, "num_chunks": 4, "retrieval_ms": 147, "generation_ms": 557, "cached": false, "input_tokens": 368, "output_tokens": 24, "latency_ms": 704}
+{"timestamp": "2026-11-18T20:48:52.228+00:00", "label": "cost-1795034922-6", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "When should I drop a class to avoid a W on my transcript?", "status": "answered", "error": null, "answer": "To avoid a W on your transcript, you should drop a class through the end of the second week, because drops after week two show as a W. \n\nSource: `admin_add_drop_deadline.txt`", "sources": ["admin_add_drop_deadline.txt", "admin_grade_appeals.txt", "admin_withdrawal_deadline.txt"], "best_distance": 0.3643, "num_chunks": 4, "retrieval_ms": 84, "generation_ms": 636, "cached": false, "input_tokens": 403, "output_tokens": 46, "latency_ms": 720}
+{"timestamp": "2026-11-18T20:48:52.952+00:00", "label": "cost-1795034922-7", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "How many classes can I take as pass/fail in my degree?", "status": "answered", "error": null, "answer": "You can take a maximum of eight courses pass/fail across a degree, with a limit of two per year (admin_pass_fail_option.txt).", "sources": ["admin_graduation_requirements.txt", "admin_pass_fail_option.txt"], "best_distance": 0.3487, "num_chunks": 4, "retrieval_ms": 80, "generation_ms": 1347, "cached": false, "input_tokens": 400, "output_tokens": 33, "latency_ms": 1427}
+{"timestamp": "2026-11-18T20:48:54.384+00:00", "label": "cost-1795034922-8", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "What's a typical wait time to talk to a councellor at the health center for the first time?", "status": "answered", "error": null, "answer": "The typical wait time for a first counselling session is usually three or four days (from health_center.txt).", "sources": ["dining_the_ridgeway_cafe.txt", "dining_the_ridgeway_cafe_followup.txt", "health_center.txt"], "best_distance": 0.3976, "num_chunks": 4, "retrieval_ms": 88, "generation_ms": 833, "cached": false, "input_tokens": 442, "output_tokens": 23, "latency_ms": 921}
+{"timestamp": "2026-11-18T20:48:55.308+00:00", "label": "cost-1795034922-9", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "When does the weather turn warmer after winter?", "status": "answered", "error": null, "answer": "Based on the provided documents, the cold period lasts until early March (winter_gear.txt). However, the documents do not specifically state when the weather turns warmer after winter.", "sources": ["transit_walking.txt", "winter_gear.txt"], "best_distance": 0.4679, "num_chunks": 4, "retrieval_ms": 83, "generation_ms": 869, "cached": false, "input_tokens": 366, "output_tokens": 36, "latency_ms": 953}
+{"timestamp": "2026-11-18T20:48:56.265+00:00", "label": "cost-1795034922-10", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "Can I use my remaining printing quota from a past semester?", "status": "answered", "error": null, "answer": "No, you cannot. The printing quota does not roll over from one semester to the next (admin_printing_quota.txt).", "sources": ["admin_add_drop_deadline.txt", "admin_printing_quota.txt"], "best_distance": 0.3604, "num_chunks": 4, "retrieval_ms": 85, "generation_ms": 1062, "cached": false, "input_tokens": 368, "output_tokens": 27, "latency_ms": 1147}
+{"timestamp": "2026-11-18T20:49:18.746+00:00", "label": "fail-empty-question", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "", "status": "bad_request", "error": "Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}", "answer": null, "latency_ms": 0}
+```
+
+**What It Costs**
+
+One answered question costs about 430 tokens (396 in, 33 out) and about 1.2 seconds.
+
+I measured it with `tools/measure_cost.py` and `AI201_CACHE=0`. It sends one warm-up request, then 10 more, and averages the logged tokens and latency for those 10.
+
+| Average over 10 warm requests | |
+|---|---|
+| input tokens | 395.8 |
+| output tokens | 32.5 |
+| total tokens | 428.3 |
+| `latency_ms` | 1158 |
+| `retrieval_ms` | 92 |s
+| `generation_ms` | 1066 |
+
+I skip the first request because it's slower. On a cold start, retrieval took 1173 ms against about 90 ms after.
+
+A question the gate refuses costs 0 tokens and about 0.1 seconds. A cached repeat also costs 0 tokens.
