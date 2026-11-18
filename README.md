@@ -409,7 +409,7 @@ Shape A, deploy and instrument. `serve.py` has no logging right now. I'm adding 
 
 - Request: `timestamp`, `label`, `status`, `error`
 - In and out: `question`, `answer`
-- Retrieval and gate: `corpus`, `num_chunks`, `sources`, `best_distance`, `refused`
+- Retrieval and gate: `corpus`, `num_chunks`, `sources`, `best_distance`
 - Timing: `latency_ms`, `retrieval_ms`, `generation_ms`
 - Cost: `model`, `cached`, `input_tokens`, `output_tokens`
 

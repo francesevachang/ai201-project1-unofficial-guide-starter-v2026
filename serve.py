@@ -20,20 +20,32 @@ Why this exists: `app.py` runs once and exits, which is fine on your laptop
 and impossible to deploy. A hosted service has to stay up and wait for
 requests. This is the smallest thing that does that.
 
-⚠️ There is deliberately no logging, no timing and no metrics in this file.
-Unit 9 has you build the structured log yourself — the request line, the
-timing field everyone skips, the whole instrument-before-you-deploy exercise.
-Shipping a logger here would hand you the answer to that. Add yours in unit 9;
-this file stays the bare shell until then.
+Every /ask request writes one JSON line to logs/requests.jsonl. The fields
+are listed in the README under Capstone.
 """
 
+import json
 import os
+import time
+from datetime import datetime, timezone
 
 from flask import Flask, jsonify, request
 
 import config
 
 app = Flask(__name__)
+
+LOG_PATH = config.ROOT / "logs" / "requests.jsonl"
+
+
+def write_log(record):
+    """Append one request to the log. A logging problem never fails a request."""
+    try:
+        LOG_PATH.parent.mkdir(exist_ok=True)
+        with LOG_PATH.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(record) + "\n")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[log] could not write: {exc}", flush=True)
 
 
 @app.get("/health")
@@ -73,26 +85,56 @@ def ask():
     """
     from app import ask_pipeline
 
+    started = time.perf_counter()
     payload = request.get_json(silent=True) or {}
     question = (payload.get("question") or "").strip()
 
+    record = {
+        "timestamp": datetime.now(timezone.utc).isoformat(timespec="milliseconds"),
+        "label": payload.get("label"),
+        "corpus": config.CORPUS,
+        "model": config.MODEL,
+        "question": question,
+    }
+
+    def finish(body, code, **fields):
+        record.update(fields)
+        record["latency_ms"] = round((time.perf_counter() - started) * 1000)
+        write_log(record)
+        return jsonify(body), code
+
     if not question:
-        return (
-            jsonify(
-                {
-                    "error": "Send JSON with a question in it, like "
-                    '{"question": "is the housing lottery random?"}'
-                }
-            ),
-            400,
+        msg = (
+            "Send JSON with a question in it, like "
+            '{"question": "is the housing lottery random?"}'
         )
+        return finish({"error": msg}, 400, status="bad_request", error=msg, answer=None)
+
+    import generate
+
+    tokens_before = generate.token_counts()
+    hits_before = generate.cache_hit_count()
 
     try:
         outcome = ask_pipeline(question, corpus=config.CORPUS)
     except Exception as exc:  # noqa: BLE001 — a reader gets this, not a traceback
-        return jsonify({"error": f"{type(exc).__name__}: {exc}"}), 500
+        msg = f"{type(exc).__name__}: {exc}"
+        return finish({"error": msg}, 500, status="error", error=msg, answer=None)
 
-    return jsonify(
+    tokens_after = generate.token_counts()
+    usage = {
+        "cached": generate.cache_hit_count() > hits_before,
+        "input_tokens": tokens_after["prompt"] - tokens_before["prompt"],
+        "output_tokens": tokens_after["output"] - tokens_before["output"],
+    }
+
+    if outcome["refused"]:
+        status = "refused_by_gate"
+    elif "enough information" in outcome["answer"].lower():
+        status = "refused_by_model"
+    else:
+        status = "answered"
+    return finish(
         {
             "question": question,
             "answer": outcome["answer"],
@@ -101,7 +143,14 @@ def ask():
             "best_distance": round(outcome["best_distance"], 4),
             "threshold": outcome["threshold"],
             "corpus": config.CORPUS,
-        }
+        },
+        200,
+        status=status,
+        error=None,
+        answer=outcome["answer"],
+        sources=outcome["sources"],
+        best_distance=round(outcome["best_distance"], 4),
+        **usage,
     )
 
 

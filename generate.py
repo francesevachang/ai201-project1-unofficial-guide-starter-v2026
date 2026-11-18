@@ -166,6 +166,10 @@ def call_count() -> int:
     return _session_calls
 
 
+def cache_hit_count() -> int:
+    return _cache_hits
+
+
 def token_counts() -> dict[str, int]:
     """Tokens this session actually used, as reported by the service.
 
