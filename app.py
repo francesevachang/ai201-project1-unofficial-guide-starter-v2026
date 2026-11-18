@@ -203,6 +203,7 @@ def ask_pipeline(
     import gate
     from generate import answer_from_chunks, build_prompt
 
+    t0 = time.perf_counter()
     results = search(
         question,
         top_k=top_k or config.TOP_K,
@@ -210,6 +211,7 @@ def ask_pipeline(
         variant=variant,
     )
     decision = gate.check(results, threshold=threshold)
+    retrieval_ms = round((time.perf_counter() - t0) * 1000)
     if on_gate is not None:
         on_gate(decision)
 
@@ -220,6 +222,9 @@ def ask_pipeline(
         "threshold": decision.threshold,
         "sources": [],
         "prompt": None,
+        "num_chunks": len(results),
+        "retrieval_ms": retrieval_ms,
+        "generation_ms": 0,
     }
 
     if not decision.passed:
@@ -231,7 +236,9 @@ def ask_pipeline(
         on_prompt(prompt)
 
     outcome["prompt"] = prompt
+    t1 = time.perf_counter()
     outcome["answer"] = answer_from_chunks(question, results)
+    outcome["generation_ms"] = round((time.perf_counter() - t1) * 1000)
     outcome["sources"] = sorted({r.source for r in results})
     return outcome
 
