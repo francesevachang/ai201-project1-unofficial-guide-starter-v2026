@@ -102,6 +102,44 @@ Requiring 4/5 allows for errors when a document appears to be highly relevant bu
 
 ---
 
+---
+
+# Capstone criteria — the extension (`serve.py` + request log)
+
+These cover the new part: `/ask` over HTTP and the JSON request log. Numbers come from my cost run (10 warm requests, cache off).
+
+## 1. Every request leaves one complete log line
+
+Send 20 mixed requests (answered, gate-refused, empty question). The log gets exactly 20 new lines, each valid JSON with all the fields its `status` should have.
+
+**Why this target:** The log is my only view of what the service did, so one bad line makes it hard to trust. 20 of 20 because logging is plain code, so a miss is a bug. Error lines skip some fields on purpose, so "complete" depends on the status.
+
+## 2. Answered requests are fast
+
+Out of 20 uncached answered requests, at most 1 has `latency_ms` over 3000.
+
+**Why this target:** My mean is 1158 ms and the slowest I saw was 2307 ms, so 3000 leaves room for Gemini being slow. 2000 would fail on a question I already know is slow. Past 3 seconds, a student would think it's broken. I allow one miss for a random slow call.
+
+## 3. Answers stay cheap
+
+Mean `input_tokens + output_tokens` over 10 uncached answered requests is at most 600.
+
+**Why this target:** I measured 428. Most of that is the 4 retrieved chunks, so it jumps if `TOP_K` or the prompt grows. 600 is about 40% above now, enough to ignore normal swings (input was 366–442) but still catch a real change. 450 would trip on noise. 1000 would let the cost double without me noticing.
+
+## 4. Bad input gets a clean rejection (bad path)
+
+Send `{"question": ""}`, `{}`, and `{"question": "   "}`. Each returns HTTP 400 (not 500), logs `bad_request` with an `error` message and no answer, and uses 0 tokens. A normal question right after still works.
+
+**Why this target:** I've only tried the empty string. A missing key or all spaces could slip through and get sent to Gemini. 3 of 3 because this is simple input checking. A typo from a student shouldn't look like the server crashed.
+
+## 5. A broken pipeline fails loudly and recovers (bad path)
+
+With a bad API key, 3 requests each return HTTP 500, log `status: "error"` with the message and a `latency_ms`, and show no stack trace in the response. After I put the key back, the next request is answered without a restart.
+
+**Why this target:** The Gemini call is the part most likely to fail for real (key, quota, network). If errors aren't logged I won't know why answers stopped, and if one failure kills the server, a bad minute becomes an outage. I've only seen it log once, so 3 of 3 shows it isn't luck.
+
+---
+
 <!-- ─────────────────────────────────────────────────────────────────────────
      UNIT 2 — read this before you change anything above.
 
