@@ -407,11 +407,32 @@ Shape A, deploy and instrument. `serve.py` has no logging right now. I'm adding 
 
 **Log Fields**
 
-- Request: `timestamp`, `label`, `status`, `error`
-- In and out: `question`, `answer`
-- Retrieval and gate: `corpus`, `num_chunks`, `sources`, `best_distance`
-- Timing: `latency_ms`, `retrieval_ms`, `generation_ms`
-- Cost: `model`, `cached`, `input_tokens`, `output_tokens`
+One JSON line per `/ask` request, in `logs/requests.jsonl`.
+
+- `timestamp`: when the request came in, UTC.
+- `label`: an optional tag I send with the request to find it later, like `before-c1-t2`. `null` if I didn't send one.
+- `corpus`: which corpus answered. Always `campus_life` for me.
+- `model`: which Gemini model was used.
+- `question`: what was asked.
+- `status`: what happened. One of:
+  - `answered`: the gate passed and the model answered
+  - `refused_by_gate`: the question was too far from the corpus, so the model was never called
+  - `refused_by_model`: the gate passed, but the model said it didn't have enough information
+  - `bad_request`: no question in the request (HTTP 400)
+  - `error`: something broke inside the pipeline (HTTP 500)
+- `error`: the error message when `status` is `error` or `bad_request`, otherwise `null`.
+- `answer`: what came back. `null` on `error` and `bad_request`.
+- `sources`: the files the retrieved chunks came from. Empty when the gate refused.
+- `num_chunks`: how many chunks retrieval pulled back. Always 4, from `TOP_K`.
+- `best_distance`: distance of the closest chunk. Lower is closer. Above 0.65 the gate refuses.
+- `cached`: `true` if the answer came from the local cache instead of a real model call.
+- `input_tokens`: tokens sent to the model. 0 when cached or refused by the gate.
+- `output_tokens`: tokens the model wrote back. Same zeros as above.
+- `retrieval_ms`: search plus the gate decision, in milliseconds.
+- `generation_ms`: the model call, in milliseconds. 0 when the gate refused.
+- `latency_ms`: the whole request, start to finish, in milliseconds. A bit more than `retrieval_ms` + `generation_ms`, since it also covers parsing, imports and prompt building.
+
+Lines with `status` of `error` or `bad_request` stop early, so they leave out the fields that never got filled in (`sources`, `best_distance`, `num_chunks`, `retrieval_ms`, `generation_ms`, `cached` and the token counts). `latency_ms` is always there.
 
 **Out of Scope**
 
