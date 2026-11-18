@@ -104,15 +104,13 @@ Requiring 4/5 allows for errors when a document appears to be highly relevant bu
 
 ---
 
-# Capstone criteria — the extension (`serve.py` + request log)
-
-These cover the new part: `/ask` over HTTP and the JSON request log. Numbers come from my cost run (10 warm requests, cache off).
+# Capstone criteria
 
 ## 1. Every request leaves one complete log line
 
 Send 20 mixed requests (answered, gate-refused, empty question). The log gets exactly 20 new lines, each valid JSON with all the fields its `status` should have.
 
-**Why this target:** The log is my only view of what the service did, so one bad line makes it hard to trust. 20 of 20 because logging is plain code, so a miss is a bug. Error lines skip some fields on purpose, so "complete" depends on the status.
+**Why this target:** The log is my only view of what the service did, so one bad line makes it hard to trust. 20 of 20 because logging is plain code, so a miss is a bug.
 
 ## 2. Answered requests are fast
 

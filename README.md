@@ -477,3 +477,54 @@ I measured it with `tools/measure_cost.py` and `AI201_CACHE=0`. It sends one war
 I skip the first request because it's slower. On a cold start, retrieval took 1173 ms against about 90 ms after.
 
 A question the gate refuses costs 0 tokens and about 0.1 seconds. A cached repeat also costs 0 tokens.
+
+## Capstone Run Log
+
+Three runs of all five criteria from `criteria.md` (capstone section). Each run starts fresh servers with the cache off and sends one warm-up request that isn't counted. Full output, including every log line, is in `results/capstone_run_2026-11-18_1658.md`. The raw server logs are in `results/capstone_logs/`.
+
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. Every request leaves one complete log line | 20 of 20 | 20/20 | 20/20 | 20/20 | MET |
+| 2. Answered requests are fast | at most 1 of 20 over 3000 ms | 8/20 over | 6/20 over | 1/20 over | MISSED |
+| 3. Answers stay cheap | mean tokens at most 600 | 430 | 429 | 431 | MET |
+| 4. Bad input gets a clean rejection | 3 of 3, then a normal question works | 3/3 | 3/3 | 3/3 | MET |
+| 5. A broken pipeline fails loudly and recovers | 3 of 3, then recovers without restart | 3/3, no recovery | 3/3, no recovery | 3/3, no recovery | MISSED |
+
+Notes:
+- Criterion 2, run 2: one request failed after 15.5 s on a Gemini rate limit (429). I counted it as a miss. A student waiting on it got an error after 15 seconds.
+- Criterion 5: in all three runs the 3 bad-key requests returned a clean 500 and were logged. After the real key was put back into the running server's environment, the next request still failed with the old key error.
+
+All lines below are from run 1, produced by `serve.py::ask` (the `/ask` route) and driven by `tools/run_capstone_eval.py`.
+
+**1. Log lines** (`run_capstone_eval.py::crit1`): one of each status, out of 20.
+
+```json
+{"timestamp": "2026-11-18T21:55:08.652+00:00", "label": "c1-r1-1", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "When should I drop a class to avoid a W on my transcript?", "status": "answered", "error": null, "answer": "To avoid a \"W\" on your transcript, you must drop a class by the end of week two, because drops after week two show as a \"W\". \n\nSource: *admin_add_drop_deadline.txt*", "sources": ["admin_add_drop_deadline.txt", "admin_grade_appeals.txt", "admin_withdrawal_deadline.txt"], "best_distance": 0.3643, "num_chunks": 4, "retrieval_ms": 83, "generation_ms": 2327, "cached": false, "input_tokens": 403, "output_tokens": 48, "latency_ms": 2410}
+{"timestamp": "2026-11-18T21:55:11.065+00:00", "label": "c1-r1-2", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "What is the capital of Mongolia?", "status": "refused_by_gate", "error": null, "answer": "I don't have enough information about that.", "sources": [], "best_distance": 0.7873, "num_chunks": 4, "retrieval_ms": 85, "generation_ms": 0, "cached": false, "input_tokens": 0, "output_tokens": 0, "latency_ms": 85}
+{"timestamp": "2026-11-18T21:55:11.152+00:00", "label": "c1-r1-3", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "", "status": "bad_request", "error": "Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}", "answer": null, "latency_ms": 0}
+```
+
+**2. Latency** (`run_capstone_eval.py::crit2_and_3`): the slowest request and a fast one. Retrieval stays near 90 ms. The time is in `generation_ms`.
+
+```json
+{"timestamp": "2026-11-18T21:54:14.810+00:00", "label": "c23-r1-01", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "When should I drop a class to avoid a W on my transcript?", "status": "answered", "error": null, "answer": "To avoid a W on your transcript, you should drop a class by the end of the second week, as drops after week two result in a W. \n\nSource: admin_add_drop_deadline.txt", "sources": ["admin_add_drop_deadline.txt", "admin_grade_appeals.txt", "admin_withdrawal_deadline.txt"], "best_distance": 0.3643, "num_chunks": 4, "retrieval_ms": 110, "generation_ms": 5761, "cached": false, "input_tokens": 403, "output_tokens": 44, "latency_ms": 5871}
+{"timestamp": "2026-11-18T21:54:31.409+00:00", "label": "c23-r1-04", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "When does the weather turn warmer after winter?", "status": "answered", "error": null, "answer": "Based on the provided documents, it states that the winter is cold from mid-November to early March, but the documents do not specifically state when the weather turns warmer after winter. (Source: winter_gear.txt)", "sources": ["transit_walking.txt", "winter_gear.txt"], "best_distance": 0.4679, "num_chunks": 4, "retrieval_ms": 78, "generation_ms": 601, "cached": false, "input_tokens": 366, "output_tokens": 45, "latency_ms": 679}
+```
+
+**3. Tokens** (`run_capstone_eval.py::crit2_and_3`): same requests as above. 403 + 44 and 366 + 45. The 10-request mean was 429.6.
+
+**4. Bad input** (`run_capstone_eval.py::crit4`): empty string, missing key, spaces only, then a normal question.
+
+```json
+{"timestamp": "2026-11-18T21:55:17.847+00:00", "label": "c4-r1-empty", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "", "status": "bad_request", "error": "Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}", "answer": null, "latency_ms": 0}
+{"timestamp": "2026-11-18T21:55:17.848+00:00", "label": "c4-r1-missing", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "", "status": "bad_request", "error": "Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}", "answer": null, "latency_ms": 0}
+{"timestamp": "2026-11-18T21:55:17.849+00:00", "label": "c4-r1-space", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "", "status": "bad_request", "error": "Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}", "answer": null, "latency_ms": 0}
+{"timestamp": "2026-11-18T21:55:17.850+00:00", "label": "c4-r1-after", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "When should I drop a class to avoid a W on my transcript?", "status": "answered", "error": null, "answer": "To avoid a W on your transcript, you should drop a class by the end of the second week, as drops after week two result in a W. \n\nSource: `admin_add_drop_deadline.txt`", "sources": ["admin_add_drop_deadline.txt", "admin_grade_appeals.txt", "admin_withdrawal_deadline.txt"], "best_distance": 0.3643, "num_chunks": 4, "retrieval_ms": 96, "generation_ms": 624, "cached": false, "input_tokens": 403, "output_tokens": 46, "latency_ms": 720}
+```
+
+**5. Bad key** (`run_capstone_eval.py::crit5`): the first error, then the request sent after the real key was put back.
+
+```json
+{"timestamp": "2026-11-18T21:55:18.579+00:00", "label": "c5-r1-1", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "When should I drop a class to avoid a W on my transcript?", "status": "error", "error": "ClientError: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key not valid. Please pass a valid API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key not valid. Please pass a valid API key.'}]}}", "answer": null, "latency_ms": 1951}
+{"timestamp": "2026-11-18T21:55:21.337+00:00", "label": "c5-r1-recover", "corpus": "campus_life", "model": "gemini-3.5-flash-lite", "question": "When should I drop a class to avoid a W on my transcript?", "status": "error", "error": "ClientError: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key not valid. Please pass a valid API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key not valid. Please pass a valid API key.'}]}}", "answer": null, "latency_ms": 121}
+```
