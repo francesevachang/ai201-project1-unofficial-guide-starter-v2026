@@ -394,3 +394,26 @@ And then, score refusal behavior separately under another metric, potentially on
 
 ## How I Used AI 
 I asked Claude to argue the opposite verdict as strongly as it can to see if I did not catch anything. I also used it to confirm my thought on why criterion #2 cannot be met and suggest ways of improvement.
+
+## Capstone
+
+**The System**
+
+The Unofficial Guide, my RAG system over the `campus_life` corpus from units 1 and 2.
+
+**The Shape**
+
+Shape A, deploy and instrument. `serve.py` has no logging right now. I'm adding a structured log so every `/ask` request writes one JSON line (fields listed below). It runs locally (Path B) with `python serve.py`, since the embedding model and Chroma index won't fit well in a 512 MB free tier.
+
+**Log Fields**
+
+- Request: `timestamp`, `label`, `status`, `error`
+- In and out: `question`, `answer`
+- Retrieval and gate: `corpus`, `num_chunks`, `sources`, `best_distance`, `refused`
+- Timing: `latency_ms`, `retrieval_ms`, `generation_ms`
+- Cost: `model`, `cached`, `input_tokens`, `output_tokens`
+
+**Out of Scope**
+
+- No changes to chunking, retrieval, the gate, or the prompt.
+- No new endpoints or UI.
